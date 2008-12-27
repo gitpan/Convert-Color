@@ -1,0 +1,23 @@
+Build.PL
+examples/html-sample.pl
+lib/Convert/Color.pm
+lib/Convert/Color/HSL.pm
+lib/Convert/Color/HSV.pm
+lib/Convert/Color/RGB.pm
+lib/Convert/Color/RGB16.pm
+lib/Convert/Color/RGB8.pm
+lib/Convert/Color/VGA.pm
+lib/Convert/Color/X11.pm
+MANIFEST			This list of files
+t/00use.t
+t/01rgb.t
+t/02hsv.t
+t/03hsl.t
+t/11convert-rgb.t
+t/12convert-hsv.t
+t/13convert-hsl.t
+t/20magic-const.t
+t/30vga.t
+t/31x11.t
+Makefile.PL
+META.yml
