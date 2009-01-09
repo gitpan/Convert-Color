@@ -5,11 +5,9 @@ use base qw( Convert::Color );
 
 use constant COLOR_SPACE => 'rgb';
 
-use List::Util qw( max min );
-
 use Carp;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -110,90 +108,24 @@ sub red   { shift->[0] }
 sub green { shift->[1] }
 sub blue  { shift->[2] }
 
-=head1 SUPPORTED CONVERSIONS
+=head2 ( $red, $green, $blue ) = $color->rgb
 
-The following conversion methods are supported natively
-
-=over 4
+Returns the individual red, green and blue color components of the color
+value.
 
 =cut
 
-sub as_rgb { shift } # identity
-
-# HSV and HSL are related, using some common elements.
-# See also
-#  http://en.wikipedia.org/wiki/HSV_color_space
-
-sub _hue_min_max
+sub rgb
 {
    my $self = shift;
-
-   my ( $r, $g, $b ) = @$self;
-
-   my $max = max $r, $g, $b;
-   my $min = min $r, $g, $b;
-
-   my $hue;
-
-   if( $max == $min ) {
-      $hue = 0;
-   }
-   elsif( $max == $r ) {
-      $hue = 60 * ( $g - $b ) / ( $max - $min );
-   }
-   elsif( $max == $g ) {
-      $hue = 60 * ( $b - $r ) / ( $max - $min ) + 120;
-   }
-   elsif( $max == $b ) {
-      $hue = 60 * ( $r - $g ) / ( $max - $min ) + 240;
-   }
-
-   return ( $hue, $min, $max );
+   return @$self;
 }
 
-=item C<as_hsv>
-
-=cut
-
-sub as_hsv
+sub new_rgb
 {
-   my $self = shift;
-
-   my ( $hue, $min, $max ) = $self->_hue_min_max;
-
-   use Convert::Color::HSV;
-
-   return Convert::Color::HSV->new(
-      $hue,
-      $max == 0 ? 0 : 1 - ( $min / $max ),
-      $max
-   );
+   my $class = shift;
+   return $class->new( @_ );
 }
-
-=item C<as_hsl>
-
-=cut
-
-sub as_hsl
-{
-   my $self = shift;
-
-   my ( $hue, $min, $max ) = $self->_hue_min_max;
-
-   use Convert::Color::HSL;
-
-   my $l = ( $max + $min ) / 2;
-
-   my $s = $min == $max ? 0 :
-           $l <= 1/2    ? ( $max - $min ) / ( 2 * $l ) :
-                          ( $max - $min ) / ( 2 - 2 * $l );
-
-   return Convert::Color::HSL->new( $hue, $s, $l );
-}
-
-=back
-
-=cut
 
 # Keep perl happy; keep Britain tidy
 1;

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 20;
+use Test::More tests => 29;
 
 use Convert::Color;
 
@@ -43,3 +43,20 @@ isa_ok( $blue, 'Convert::Color::HSL' );
 is( $blue->hue,        240, 'blue hue' );
 is( $blue->saturation,   1, 'blue saturation' );
 is( $blue->lightness,  0.5, 'blue lightness' );
+
+my $yellow = Convert::Color->new( 'cmy:0,0,1' );
+
+isa_ok( $yellow, 'Convert::Color::CMY' );
+
+is( $yellow->cyan,    0, 'yellow cyan' );
+is( $yellow->magenta, 0, 'yellow magenta' );
+is( $yellow->yellow,  1, 'yellow yellow' );
+
+my $cyan = Convert::Color->new( 'cmyk:1,0,0,0' );
+
+isa_ok( $cyan, 'Convert::Color::CMYK' );
+
+is( $cyan->cyan,    1, 'cyan cyan' );
+is( $cyan->magenta, 0, 'cyan magenta' );
+is( $cyan->yellow,  0, 'cyan yellow' );
+is( $cyan->key,     0, 'cyan key' );

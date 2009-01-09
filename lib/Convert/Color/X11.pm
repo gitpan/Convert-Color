@@ -7,7 +7,7 @@ use constant COLOR_SPACE => 'x11';
 
 use Carp;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 our $RGB_TXT = '/usr/share/X11/rgb.txt';
 

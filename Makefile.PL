@@ -2,14 +2,14 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'Convert::Color',
-          'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Convert/Color.pm',
           'PREREQ_PM' => {
-                           'Test::More' => 0,
-                           'Module::Pluggable' => 0
-                         }
+                           'Module::Pluggable' => 0,
+                           'Test::More' => 0
+                         },
+          'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
+          'PL_FILES' => {}
         )
 ;

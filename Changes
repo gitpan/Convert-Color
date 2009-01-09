@@ -1,0 +1,17 @@
+Revision history for Convert-Color
+
+0.02    ADDITIONS:
+         * Support CMY and CMYK color spaces
+
+        CHANGES:
+         * Neater and more internal implementation of space->space conversions
+         * ->rgb8 / ->rgb16 are no longer methods on Convert::Color, but instead
+           on the specific ::RGB8 / ::RGB16 subclasses
+         * Added ->hsl etc.. component list accessors for other color spaces
+
+        BUGFIXES:
+         * Cache plugin list and space-to-class mapping to avoid @INC search
+           overhead in Module::Pluggable each time a new object is constructed
+
+0.01    First version, released on an unsuspecting world.
+

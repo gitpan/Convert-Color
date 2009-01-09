@@ -6,21 +6,21 @@ use Convert::Color::HSL;
 
 my $red = Convert::Color::HSL->new( 0, 1, 0.5 );
 
-my $red_rgb = $red->as_rgb;
+my $red_rgb = $red->convert_to("rgb");
 is( $red_rgb->red,   1, 'red red' );
 is( $red_rgb->green, 0, 'red green' );
 is( $red_rgb->blue,  0, 'red blue' );
 
 my $green = Convert::Color::HSL->new( 120, 1, 0.5 );
 
-my $green_rgb = $green->as_rgb;
+my $green_rgb = $green->convert_to("rgb");
 is( $green_rgb->red,   0, 'green red' );
 is( $green_rgb->green, 1, 'green green' );
 is( $green_rgb->blue,  0, 'green blue' );
 
 my $blue = Convert::Color::HSL->new( 240, 1, 0.5 );
 
-my $blue_rgb = $blue->as_rgb;
+my $blue_rgb = $blue->convert_to("rgb");
 is( $blue_rgb->red,   0, 'blue red' );
 is( $blue_rgb->green, 0, 'blue green' );
 is( $blue_rgb->blue,  1, 'blue blue' );

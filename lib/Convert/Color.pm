@@ -6,8 +6,9 @@ use Carp;
 
 use Module::Pluggable require => 1,
                       search_path => [ 'Convert::Color' ];
+my @plugins = Convert::Color->plugins;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -22,10 +23,10 @@ C<Convert::Color> - color space conversions and named lookups
  my ( $red, $green, $blue ) = $color->rgb;
 
  # GTK uses 16-bit values
- my $gtk_col = Gtk2::Gdk::Color->new( $color->rgb16 );
+ my $gtk_col = Gtk2::Gdk::Color->new( $color->as_rgb16->rgb16 );
 
  # HTML uses #rrggbb in hex
- my $html = '<td bgcolor="#' . $color->rgb8_hex . '">';
+ my $html = '<td bgcolor="#' . $color->as_rgb8->hex . '">';
 
 =head1 DESCRIPTION
 
@@ -62,6 +63,14 @@ L<Convert::Color::HSV> - hue/saturation/value
 
 L<Convert::Color::HSL> - hue/saturation/lightness
 
+=item *
+
+L<Convert::Color::CMY> - cyan/magenta/yellow
+
+=item *
+
+L<Convert::Color::CMYK> - cyan/magenta/yellow/key (blackness)
+
 =back
 
 The following classes are subclasses of one of the above, which provide a way
@@ -85,6 +94,22 @@ L<Convert::Color::X11> - named lookup of colors from X11's F<rgb.txt>
 
 =cut
 
+my %_space2class_cache; # {$space} = $class
+sub _space2class
+{
+   my ( $space ) = @_;
+
+   return $_space2class_cache{$space} if exists $_space2class_cache{$space};
+
+   foreach my $class ( @plugins ) {
+      $class->can( 'COLOR_SPACE' ) or next;
+
+      return $_space2class_cache{$space} = $class if $class->COLOR_SPACE eq $space;
+   }
+
+   return undef;
+}
+
 =head2 $color = Convert::Color->new( STRING )
 
 Return a new value to represent the color specified by the string. This string
@@ -96,6 +121,8 @@ example
  rgb16:RRRRGGGGBBBB
  hsv:HUE,SAT,VAL
  hsl:HUE,SAT,LUM
+ cmy:CYAN,MAGENTA,YELLOW
+ cmyk:CYAN,MAGENTA,YELLOW,KEY
 
  vga:NAME
  vga:INDEX
@@ -114,15 +141,9 @@ sub new
    $str =~ m/^(\w+):(.*)$/ or croak "Unable to parse color name $str";
    ( my $space, $str ) = ( $1, $2 );
 
-   foreach my $class ( Convert::Color->plugins ) {
-      $class->can( 'COLOR_SPACE' ) or next;
+   my $class = _space2class( $space ) or croak "Unrecognised color space name '$space'";
 
-      if( $class->COLOR_SPACE eq $space ) {
-         return $class->new( $str );
-      }
-   }
-
-   croak "Unrecognised color space name '$space'";
+   return $class->new( $str );
 }
 
 =head1 METHODS
@@ -141,142 +162,154 @@ method.
 sub rgb
 {
    my $self = shift;
-
-   $self->can( 'as_rgb' ) or croak "Cannot express $self as an RGB triplet";
-
-   my $rgb = $self->as_rgb;
-
-   return $rgb->red, $rgb->green, $rgb->blue;
+   croak "Abstract method - should be overloaded by ".ref($self);
 }
 
-=head2 ( $red, $green, $blue ) = $color->rgb8
+=head1 COLOR SPACE CONVERSIONS
 
-Returns the individual red, green and blue color components of the color
-value in RGB8 space. For RGB8 values, this is done directly. For values in
-other spaces, this is done by first converting them to an RGB value using
-their C<to_rgb()> method, then converting that to RGB8.
+Cross-conversion between color spaces is provided by the C<convert_to()>
+method, assisted by helper methods in the two color space classes involved.
+
+When converting C<$color> from color space SRC to color space DEST, the
+following operations are attemped, in this order. SRC and DEST refer to the
+names of the color spaces, e.g. C<rgb>.
+
+=over 4
+
+=item 1.
+
+If SRC and DEST are equal, return C<$color> as it stands.
+
+=item 2.
+
+If the SRC space's class provides a C<convert_to_DEST> method, use it.
+
+=item 3.
+
+If the DEST space's class provides a C<new_from_SRC> constructor, call it and
+pass C<$color>.
+
+=item 4.
+
+If the DEST space's class provides a C<new_rgb> constructor, convert C<$color>
+to red/green/blue components then call it.
+
+=item 5.
+
+If none of these operations worked, then throw an exception.
+
+=back
+
+These functions may be called in the following ways:
+
+ $other = $color->convert_to_DEST()
+ $other = Dest::Class->new_from_SRC( $color )
+ $other = Dest::Class->new_rgb( $color->rgb )
 
 =cut
 
-sub rgb8
+=head2 $other = $color->convert_to( $space )
+
+Attempt to convert the color into its representation in the given space. See
+above for the various ways this may be achieved.
+
+=cut
+
+sub convert_to
 {
    my $self = shift;
+   my ( $to_space ) = @_;
 
-   return map { int( $_ * 255 ) } $self->rgb;
+   my $to_class = _space2class( $to_space ) or croak "Unrecognised color space name '$to_space'";
+
+   my $from_space = ref($self)->COLOR_SPACE;
+
+   if( $from_space eq $to_space ) {
+      # Identity conversion
+      return $self;
+   }
+
+   my $code;
+   if( $code = $self->can( "convert_to_$to_space" ) ) {
+      return $code->( $self );
+   }
+   elsif( $code = $to_class->can( "new_from_$from_space" ) ) {
+      return $code->( $to_class, $self );
+   }
+   elsif( $code = $to_class->can( "new_rgb" ) ) {
+      # TODO: check that $self->rgb is overloaded
+      return $code->( $to_class, $self->rgb );
+   }
+   else {
+      croak "Cannot convert from space '$from_space' to space '$to_space'";
+   }
 }
 
-=head2 ( $red, $green, $blue ) = $color->rgb16
+# Fallback implementations in case subclasses don't provide anything better
 
-Returns the individual red, green and blue color components of the color
-value in RGB16 space. For RGB16 values, this is done directly. For values in
-other spaces, this is done by first converting them to an RGB value using
-their C<to_rgb()> method, then converting that to RGB16.
-
-=cut
-
-sub rgb16
+sub convert_to_rgb
 {
    my $self = shift;
-
-   return map { int( $_ * 0xffff ) } $self->rgb;
+   require Convert::Color::RGB;
+   return Convert::Color::RGB->new( $self->rgb );
 }
 
-=head2 $str = $color->rgb8_hex
+=head1 AUTOLOADED CONVERSION METHODS
 
-Returns a string representation of the color components in the RGB8 space, in
-a convenient C<RRGGBB> hex string, likely to be useful HTML, or other similar
-places.
+This class provides C<AUTOLOAD> and C<can> behaviour which automatically
+constructs conversion methods. The following method calls are identical:
+
+ $color->convert_to('rgb')
+ $color->as_rgb
+
+The generated method will be stored in the package, so that future calls will
+not have the AUTOLOAD overhead.
 
 =cut
 
-sub rgb8_hex
+# Since this is AUTOLOADed, we can dynamically provide new methods for classes
+# discovered at runtime.
+
+sub can
 {
    my $self = shift;
-   sprintf "%02x%02x%02x", $self->rgb8;
+   my ( $method ) = @_;
+
+   if( $method =~ m/^as_(.*)$/ ) {
+      my $to_space = $1;
+      _space2class( $to_space ) or return undef;
+
+      return sub {
+         my $self = shift;
+         return $self->convert_to( $to_space );
+      };
+   }
+
+   return $self->SUPER::can( $method );
 }
 
-=head2 $str = $color->rgb16_hex
-
-Returns a string representation of the color components in the RGB16 space, in
-a convenient C<RRRRGGGGBBBB> hex string.
-
-=cut
-
-sub rgb16_hex
+sub AUTOLOAD
 {
-   my $self = shift;
-   sprintf "%04x%04x%04x", $self->rgb16;
+   my ( $method ) = our $AUTOLOAD =~ m/::([^:]+)$/;
+
+   return if $method eq "DESTROY";
+
+   if( my $code = $_[0]->can( $method ) ) {
+      no strict 'refs';
+      *{$method} = $code;
+      goto &$code;
+   }
+
+   croak "$_[0] cannot do $method";
 }
 
-=head1 COMMON METHODS OF SUBCLASSES
+=head1 OTHER METHODS
 
-Most subclasses should support the following methods and behaviours. Note that
-this list is just a guide; the documentation for the specific class in
-question. As well as the following, it is likely the subclass will provide
-accessors to directly obtain the components of its representation in the
-specific space.
+As well as the above, it is likely the subclass will provide accessors to
+directly obtain the components of its representation in the specific space.
+For more detail, see the documentation for the specific subclass in question.
 
 =cut
-
-=head2 $color->as_rgb
-
-Return a new value representing the color in RGB space
-
-=cut
-
-=head2 $color->as_rgb8
-
-Return a new value representing the color in RGB8 space
-
-=cut
-
-sub as_rgb8
-{
-   my $self = shift;
-
-   require Convert::Color::RGB8;
-
-   return Convert::Color::RGB8->new( $self->rgb8 );
-}
-
-=head2 $color->as_rgb16
-
-Return a new value representing the color in RGB16 space
-
-=cut
-
-sub as_rgb16
-{
-   my $self = shift;
-
-   require Convert::Color::RGB16;
-
-   return Convert::Color::RGB16->new( $self->rgb16 );
-}
-
-=head2 $color->as_hsv
-
-Return a new value representing the color in HSV space
-
-=cut
-
-sub as_hsv
-{
-   my $self = shift;
-   $self->as_rgb->as_hsv;
-}
-
-=head2 $color->as_hsl
-
-Return a new value representing the color in HSL space
-
-=cut
-
-sub as_hsl
-{
-   my $self = shift;
-   $self->as_rgb->as_hsl;
-}
 
 # Keep perl happy; keep Britain tidy
 1;

@@ -1,13 +1,13 @@
 package Convert::Color::HSL;
 
 use strict;
-use base qw( Convert::Color );
+use base qw( Convert::Color::HueBased );
 
 use constant COLOR_SPACE => 'hsl';
 
 use Carp;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -110,26 +110,28 @@ sub hue        { shift->[0] }
 sub saturation { shift->[1] }
 sub lightness  { shift->[2] }
 
-=head1 SUPPORTED CONVERSIONS
+=head2 ( $hue, $saturation, $lightness ) = $color->hsl
 
-The following conversion methods are supported natively
-
-=over 4
-
-=cut
-
-=item C<as_rgb>
+Returns the individual hue, saturation and lightness components of the color
+value.
 
 =cut
 
-sub as_rgb
+sub hsl
+{
+   my $self = shift;
+   return @$self;
+}
+
+# Conversions
+sub rgb
 {
    my $self = shift;
 
    # See also
    #  http://en.wikipedia.org/wiki/HSV_color_space
 
-   my ( $h, $s, $l ) = @$self;
+   my ( $h, $s, $l ) = $self->hsl;
 
    my $q = $l < 0.5 ? $l * ( 1 + $s )
                     : $l + $s - ( $l * $s );
@@ -148,23 +150,29 @@ sub as_rgb
       $_ -= 6 while $_ > 6;
    } ( $tr, $tg, $tb );
 
-   my ( $r, $g, $b ) = map {
+   return map {
       $_ < 1 ? $p + ( ( $q - $p ) * $_ ) :
       $_ < 3 ? $q :
       $_ < 4 ? $p + ( ( $q - $p ) * ( 4 - $_ ) ) :
                  $p
    } ( $tr, $tg, $tb );
-
-   use Convert::Color::RGB;
-
-   return Convert::Color::RGB->new( $r, $g, $b );
 }
 
-sub as_hsl { shift } # identity
+sub new_rgb
+{
+   my $class = shift;
+   my ( $r, $g, $b ) = @_;
 
-=back
+   my ( $hue, $min, $max ) = $class->_hue_min_max( $r, $g, $b );
 
-=cut
+   my $l = ( $max + $min ) / 2;
+
+   my $s = $min == $max ? 0 :
+           $l <= 1/2    ? ( $max - $min ) / ( 2 * $l ) :
+                          ( $max - $min ) / ( 2 - 2 * $l );
+
+   return $class->new( $hue, $s, $l );
+}
 
 # Keep perl happy; keep Britain tidy
 1;

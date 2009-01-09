@@ -7,7 +7,7 @@ use constant COLOR_SPACE => 'rgb16';
 
 use Carp;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 =head1 NAME
 
@@ -87,7 +87,7 @@ sub new
       }
    }
    elsif( @_ == 3 ) {
-      ( $r, $g, $b ) = @_;
+      ( $r, $g, $b ) = map int, @_;
    }
    else {
       croak "usage: Convert::Color::RGB16->new( SPEC ) or ->new( R, G, B )";
@@ -119,20 +119,44 @@ sub green { shift->[1] }
 sub blue  { shift->[2] }
 
 # Conversions
-sub as_rgb
+sub rgb
 {
    my $self = shift;
 
-   require Convert::Color::RGB;
-
-   return Convert::Color::RGB->new( map { $_ / 0xffff } @$self );
+   return map { $_ / 0xffff } @$self;
 }
 
-# Shortcut
+sub new_rgb
+{
+   my $class = shift;
+
+   return $class->new( map { $_ * 0xffff } @_ );
+}
+
+=head2 ( $red, $green, $blue ) = $color->rgb16
+
+Returns the individual red, green and blue color components of the color
+value in RGB16 space.
+
+=cut
+
 sub rgb16
 {
    my $self = shift;
    return $self->red, $self->green, $self->blue;
+}
+
+=head2 $str = $color->hex
+
+Returns a string representation of the color components in the RGB16 space, in
+a convenient C<RRRRGGGGBBBB> hex string.
+
+=cut
+
+sub hex
+{
+   my $self = shift;
+   sprintf "%04x%04x%04x", $self->rgb16;
 }
 
 # Keep perl happy; keep Britain tidy
