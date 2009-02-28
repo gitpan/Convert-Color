@@ -1,3 +1,8 @@
+#  You may distribute under the terms of either the GNU General Public License
+#  or the Artistic License (the same terms as Perl itself)
+#
+#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+
 package Convert::Color::CMYK;
 
 use strict;
@@ -9,7 +14,7 @@ use List::Util qw( min );
 
 use Carp;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -118,7 +123,7 @@ An alias to C<key>
 
 *black = \&key; # alias
 
-=head2 ( $cyan, $magenta, $tellow, $key ) = $color->cmyk
+=head2 ( $cyan, $magenta, $yellow, $key ) = $color->cmyk
 
 Returns the individual cyan, magenta, yellow and key components of the color
 value.

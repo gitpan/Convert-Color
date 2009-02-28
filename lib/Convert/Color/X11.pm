@@ -1,3 +1,8 @@
+#  You may distribute under the terms of either the GNU General Public License
+#  or the Artistic License (the same terms as Perl itself)
+#
+#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+
 package Convert::Color::X11;
 
 use strict;
@@ -7,9 +12,16 @@ use constant COLOR_SPACE => 'x11';
 
 use Carp;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
-our $RGB_TXT = '/usr/share/X11/rgb.txt';
+# Different systems put it in different places. We'll try all of them taking
+# the first we find
+
+our @RGB_TXT = (
+   '/etc/X11/rgb.txt',
+   '/usr/share/X11/rgb.txt',
+   '/usr/X11R6/lib/X11/rgb.txt',
+);
 
 =head1 NAME
 
@@ -96,12 +108,20 @@ sub _load_x11_colors
 {
    my %colors;
 
-   open( my $colorfh, "<", $RGB_TXT ) or
-      die "Cannot read $RGB_TXT - $!\n";
+   my $rgbtxt;
+
+   foreach ( @RGB_TXT ) {
+      -f $_ or next;
+
+      open( $rgbtxt, "<", $_ ) or die "Cannot read $_ - $!\n";
+      last;
+   }
+
+   $rgbtxt or die "No rgb.txt file was found\n";
 
    local $_;
 
-   while( <$colorfh> ) {
+   while( <$rgbtxt> ) {
       s/^\s+//; # trim leading WS
       next if m/^!/; # comment
 

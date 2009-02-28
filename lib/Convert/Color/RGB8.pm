@@ -1,3 +1,8 @@
+#  You may distribute under the terms of either the GNU General Public License
+#  or the Artistic License (the same terms as Perl itself)
+#
+#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+
 package Convert::Color::RGB8;
 
 use strict;
@@ -7,7 +12,7 @@ use constant COLOR_SPACE => 'rgb8';
 
 use Carp;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -158,6 +163,68 @@ sub hex
 {
    my $self = shift;
    sprintf "%02x%02x%02x", $self->rgb8;
+}
+
+=head2 $mix = $color->alpha_blend( $other, [ $alpha ] )
+
+Return a new color which is a blended combination of the two passed into it.
+The optional C<$alpha> parameter defines the mix ratio between the two colors,
+defaulting to 0.5 if not defined. Values closer to 0 will blend more of
+C<$color>, closer to 1 will blend more of C<$other>.
+
+=cut
+
+sub alpha_blend
+{
+   my $self = shift;
+   my ( $other, $alpha ) = @_;
+
+   $alpha = 0.5 unless defined $alpha;
+
+   $alpha = 0 if $alpha < 0;
+   $alpha = 1 if $alpha > 1;
+
+   my $alphaP = 1 - $alpha;
+
+   my ( $rA, $gA, $bA ) = $self->rgb8;
+   my ( $rB, $gB, $bB ) = $other->as_rgb8->rgb8;
+
+   # Add 0.5 for rounding
+   return __PACKAGE__->new(
+      $rA * $alphaP + $rB * $alpha + 0.5,
+      $gA * $alphaP + $gB * $alpha + 0.5,
+      $bA * $alphaP + $bB * $alpha + 0.5,
+   );
+}
+
+=head2 $mix = $color->alpha8_blend( $other, [ $alpha ] )
+
+Similar to C<alpha_blend> but works with integer arithmetic. C<$alpha> should
+be an integer in the range 0 to 255.
+
+=cut
+
+sub alpha8_blend
+{
+   my $self = shift;
+   my ( $other, $alpha ) = @_;
+
+   $alpha = 127 unless defined $alpha;
+
+   $alpha = 0 if $alpha < 0;
+   $alpha = 255 if $alpha > 255;
+   $alpha = int $alpha;
+
+   my $alphaP = 255 - $alpha;
+
+   my ( $rA, $gA, $bA ) = $self->rgb8;
+   my ( $rB, $gB, $bB ) = $other->as_rgb8->rgb8;
+
+   return __PACKAGE__->new(
+      ( $rA * $alphaP + $rB * $alpha ) / 255,
+      ( $gA * $alphaP + $gB * $alpha ) / 255,
+      ( $bA * $alphaP + $bB * $alpha ) / 255,
+   );
 }
 
 # Keep perl happy; keep Britain tidy

@@ -1,5 +1,11 @@
 Revision history for Convert-Color
 
+0.03    CHANGES:
+         * Alpha-blending in RGB{,8,16} color spaces
+
+        BUGFIXES:
+         * More candidate paths to find X11's rgb.txt
+
 0.02    ADDITIONS:
          * Support CMY and CMYK color spaces
 

@@ -1,3 +1,8 @@
+#  You may distribute under the terms of either the GNU General Public License
+#  or the Artistic License (the same terms as Perl itself)
+#
+#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+
 package Convert::Color::RGB;
 
 use strict;
@@ -7,7 +12,7 @@ use constant COLOR_SPACE => 'rgb';
 
 use Carp;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
@@ -125,6 +130,37 @@ sub new_rgb
 {
    my $class = shift;
    return $class->new( @_ );
+}
+
+=head2 $mix = $color->alpha_blend( $other, [ $alpha ] )
+
+Return a new color which is a blended combination of the two passed into it.
+The optional C<$alpha> parameter defines the mix ratio between the two colors,
+defaulting to 0.5 if not defined. Values closer to 0 will blend more of
+C<$color>, closer to 1 will blend more of C<$other>.
+
+=cut
+
+sub alpha_blend
+{
+   my $self = shift;
+   my ( $other, $alpha ) = @_;
+
+   $alpha = 0.5 unless defined $alpha;
+
+   $alpha = 0 if $alpha < 0;
+   $alpha = 1 if $alpha > 1;
+
+   my $alphaP = 1 - $alpha;
+
+   my ( $rA, $gA, $bA ) = $self->rgb;
+   my ( $rB, $gB, $bB ) = $other->rgb;
+
+   return __PACKAGE__->new(
+      $rA * $alphaP + $rB * $alpha,
+      $gA * $alphaP + $gB * $alpha,
+      $bA * $alphaP + $bB * $alpha,
+   );
 }
 
 # Keep perl happy; keep Britain tidy

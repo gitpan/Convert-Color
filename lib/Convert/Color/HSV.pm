@@ -1,3 +1,8 @@
+#  You may distribute under the terms of either the GNU General Public License
+#  or the Artistic License (the same terms as Perl itself)
+#
+#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+
 package Convert::Color::HSV;
 
 use strict;
@@ -7,7 +12,7 @@ use constant COLOR_SPACE => 'hsv';
 
 use Carp;
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 =head1 NAME
 
