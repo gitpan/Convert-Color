@@ -12,7 +12,7 @@ use constant COLOR_SPACE => 'vga';
 
 use Carp;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 NAME
 
@@ -88,23 +88,58 @@ sub new
    my $class = shift;
 
    if( @_ == 1 ) {
-      my $name = $_[0];
+      my ( $name, $index );
 
-      if( $name =~ m/^\d+$/ ) {
-         $name >= 0 and $name < @vga_colors or
-            croak "No such VGA color at index $name";
+      if( $_[0] =~ m/^\d+$/ ) {
+         $index = $_[0];
+         $index >= 0 and $index < @vga_colors or
+            croak "No such VGA color at index $index";
 
-         $name = $vga_colors[$name];
+         $name = $vga_colors[$index];
+      }
+      else {
+         $name = $_[0];
+         $vga_colors[$_] eq $name and ( $index = $_, last ) for 0 .. 7;
+         defined $index or croak "No such VGA color named '$name'";
       }
 
-      my $color = $vga_colors{$name} or
-         croak "No such VGA color named '$name'";
+      my $self = $class->SUPER::new( @{ $vga_colors{$name} } );
 
-      return $class->SUPER::new( @$color );
+      $self->[3] = $index;
+
+      return $self;
    }
    else {
       croak "usage: Convert::Color::VGA->new( NAME ) or ->new( INDEX )";
    }
+}
+
+=head1 METHODS
+
+=cut
+
+=head2 $index = $color->index
+
+The index of the VGA color.
+
+=cut
+
+sub index
+{
+   my $self = shift;
+   return $self->[3];
+}
+
+=head2 $name = $color->name
+
+The name of the VGA color.
+
+=cut
+
+sub name
+{
+   my $self = shift;
+   return $vga_colors[$self->index];
 }
 
 # Keep perl happy; keep Britain tidy

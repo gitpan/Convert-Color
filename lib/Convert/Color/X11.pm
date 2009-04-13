@@ -12,7 +12,7 @@ use constant COLOR_SPACE => 'x11';
 
 use Carp;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 # Different systems put it in different places. We'll try all of them taking
 # the first we find
@@ -97,11 +97,31 @@ sub new
       my $color = $x11_colors->{$name} or
          croak "No such X11 color named '$name'";
 
-      return $class->SUPER::new( @$color );
+      my $self = $class->SUPER::new( @$color );
+
+      $self->[3] = $name;
+
+      return $self;
    }
    else {
       croak "usage: Convert::Color::X11->new( NAME )";
    }
+}
+
+=head1 METHODS
+
+=cut
+
+=head2 $name = $color->name
+
+The name of the VGA color.
+
+=cut
+
+sub name
+{
+   my $self = shift;
+   return $self->[3];
 }
 
 sub _load_x11_colors

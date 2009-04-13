@@ -12,7 +12,7 @@ use constant COLOR_SPACE => 'rgb8';
 
 use Carp;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 NAME
 
@@ -128,7 +128,7 @@ sub rgb
 {
    my $self = shift;
 
-   return map { $_ / 255 } @$self;
+   return map { $_ / 255 } @{$self}[0..2];
 }
 
 sub new_rgb
@@ -225,6 +225,50 @@ sub alpha8_blend
       ( $gA * $alphaP + $gB * $alpha ) / 255,
       ( $bA * $alphaP + $bB * $alpha ) / 255,
    );
+}
+
+=head2 $measure = $color->dst_rgb8( $other )
+
+Return a measure of the distance between the two colors. This is the
+unweighted Euclidian distance of the three color components. Two identical
+colors will have a measure of 0, pure black and pure white have a distance of
+1, and all others will lie somewhere inbetween.
+
+=cut
+
+sub dst_rgb8
+{
+   my $self = shift;
+   my ( $other ) = @_;
+
+   return sqrt( $self->dst_rgb8_cheap( $other ) ) / sqrt(3*255*255);
+}
+
+=head2 $measure = $color->dst_rgb8_cheap( $other )
+
+Return a measure of the distance between the two colors. This is the sum of
+the squares of the differences of each of the color components. This is part
+of the value used to calculate C<dst_rgb8>, but since it involves no square
+root it will be cheaper to calculate, for use in cases where only the relative
+values matter, such as when picking the "best match" out of a set of colors.
+It ranges between 0 for identical colours and 3*(255^2) for the distance between
+pure black and pure white.
+
+=cut
+
+sub dst_rgb8_cheap
+{
+   my $self = shift;
+   my ( $other ) = @_;
+
+   my ( $rA, $gA, $bA ) = $self->rgb8;
+   my ( $rB, $gB, $bB ) = $other->as_rgb8->rgb8;
+
+   my $dr = $rA - $rB;
+   my $dg = $gA - $gB;
+   my $db = $bA - $bB;
+
+   return $dr*$dr + $dg*$dg + $db*$db;
 }
 
 # Keep perl happy; keep Britain tidy

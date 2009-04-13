@@ -30,3 +30,4 @@ t/20magic-const.t
 t/30vga.t
 t/31x11.t
 t/40rgb-blend.t
+t/50rgb-dst.t

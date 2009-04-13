@@ -13,7 +13,7 @@ use Module::Pluggable require => 1,
                       search_path => [ 'Convert::Color' ];
 my @plugins = Convert::Color->plugins;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 =head1 NAME
 
