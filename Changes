@@ -1,5 +1,9 @@
 Revision history for Convert-Color
 
+0.05    CHANGES:
+         * Documentation fixes
+         * Various small updates to keep CPANTS happy
+
 0.04    CHANGES:
          * Distance metrics in RGB{,8,16} color spaces
          * Remember name/index of X11 and VGA colors

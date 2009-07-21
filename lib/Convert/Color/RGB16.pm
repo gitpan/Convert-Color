@@ -6,13 +6,14 @@
 package Convert::Color::RGB16;
 
 use strict;
+use warnings;
 use base qw( Convert::Color );
 
 use constant COLOR_SPACE => 'rgb16';
 
 use Carp;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -199,7 +200,7 @@ sub alpha_blend
 =head2 $mix = $color->alpha16_blend( $other, [ $alpha ] )
 
 Similar to C<alpha_blend> but works with integer arithmetic. C<$alpha> should
-be an integer in the range 0 to 255.
+be an integer in the range 0 to 65535.
 
 =cut
 
@@ -229,7 +230,7 @@ sub alpha16_blend
 =head2 $measure = $color->dst_rgb16( $other )
 
 Return a measure of the distance between the two colors. This is the
-unweighted Euclidian distance of the three color components. Two identical
+unweighted Euclidean distance of the three color components. Two identical
 colors will have a measure of 0, pure black and pure white have a distance of
 1, and all others will lie somewhere inbetween.
 
@@ -287,4 +288,4 @@ L<Convert::Color> - color space conversions
 
 =head1 AUTHOR
 
-Paul Evans E<lt>leonerd@leonerd.org.ukE<gt>
+Paul Evans <leonerd@leonerd.org.uk>

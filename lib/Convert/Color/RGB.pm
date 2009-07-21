@@ -6,13 +6,14 @@
 package Convert::Color::RGB;
 
 use strict;
+use warnings;
 use base qw( Convert::Color );
 
 use constant COLOR_SPACE => 'rgb';
 
 use Carp;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -166,7 +167,7 @@ sub alpha_blend
 =head2 $measure = $color->dst_rgb( $other )
 
 Return a measure of the distance between the two colors. This is the
-unweighted Euclidian distance of the three color components. Two identical
+unweighted Euclidean distance of the three color components. Two identical
 colors will have a measure of 0, pure black and pure white have a distance of
 1, and all others will lie somewhere inbetween.
 
@@ -232,4 +233,4 @@ L<Convert::Color::HSL> - a color value represented as hue/saturation/lightness
 
 =head1 AUTHOR
 
-Paul Evans E<lt>leonerd@leonerd.org.ukE<gt>
+Paul Evans <leonerd@leonerd.org.uk>

@@ -6,13 +6,14 @@
 package Convert::Color::X11;
 
 use strict;
+use warnings;
 use base qw( Convert::Color::RGB8 );
 
 use constant COLOR_SPACE => 'x11';
 
 use Carp;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 # Different systems put it in different places. We'll try all of them taking
 # the first we find
@@ -170,4 +171,4 @@ L<Convert::Color> - color space conversions
 
 =head1 AUTHOR
 
-Paul Evans E<lt>leonerd@leonerd.org.ukE<gt>
+Paul Evans <leonerd@leonerd.org.uk>

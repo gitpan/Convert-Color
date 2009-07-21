@@ -6,13 +6,14 @@
 package Convert::Color::VGA;
 
 use strict;
+use warnings;
 use base qw( Convert::Color::RGB );
 
 use constant COLOR_SPACE => 'vga';
 
 use Carp;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -159,4 +160,4 @@ L<Convert::Color> - color space conversions
 
 =head1 AUTHOR
 
-Paul Evans E<lt>leonerd@leonerd.org.ukE<gt>
+Paul Evans <leonerd@leonerd.org.uk>

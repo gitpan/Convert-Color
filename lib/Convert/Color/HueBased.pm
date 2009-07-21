@@ -3,9 +3,11 @@
 #
 #  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
 
-package Convert::Color::HueBased;
+package # hide from CPAN
+   Convert::Color::HueBased;
 
 use strict;
+use warnings;
 use base qw( Convert::Color );
 
 # No space name since we're not a complete space

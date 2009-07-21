@@ -6,6 +6,7 @@
 package Convert::Color;
 
 use strict;
+use warnings;
 
 use Carp;
 
@@ -13,7 +14,7 @@ use Module::Pluggable require => 1,
                       search_path => [ 'Convert::Color' ];
 my @plugins = Convert::Color->plugins;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -323,4 +324,4 @@ __END__
 
 =head1 AUTHOR
 
-Paul Evans E<lt>leonerd@leonerd.org.ukE<gt>
+Paul Evans <leonerd@leonerd.org.uk>

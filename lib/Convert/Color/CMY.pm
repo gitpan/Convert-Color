@@ -6,13 +6,14 @@
 package Convert::Color::CMY;
 
 use strict;
+use warnings;
 use base qw( Convert::Color );
 
 use constant COLOR_SPACE => 'cmy';
 
 use Carp;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -164,4 +165,4 @@ L<Convert::Color::CMYK> - a color value represented as cyan/magenta/yellow/key
 
 =head1 AUTHOR
 
-Paul Evans E<lt>leonerd@leonerd.org.ukE<gt>
+Paul Evans <leonerd@leonerd.org.uk>

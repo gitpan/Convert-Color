@@ -6,13 +6,14 @@
 package Convert::Color::HSV;
 
 use strict;
+use warnings;
 use base qw( Convert::Color::HueBased );
 
 use constant COLOR_SPACE => 'hsv';
 
 use Carp;
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 
 =head1 NAME
 
@@ -205,4 +206,4 @@ L<Convert::Color::RGB> - a color value represented as red/green/blue
 
 =head1 AUTHOR
 
-Paul Evans E<lt>leonerd@leonerd.org.ukE<gt>
+Paul Evans <leonerd@leonerd.org.uk>
