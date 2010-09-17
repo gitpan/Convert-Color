@@ -108,6 +108,15 @@ COLOR SPACE CONVERSIONS
     Attempt to convert the color into its representation in the given space.
     See above for the various ways this may be achieved.
 
+    If the relevant subclass has already been loaded (either explicitly, or
+    implicitly by either the "new" or "convert_to" methods), then a specific
+    conversion method will be installed in the class.
+
+     $other = $color->as_$space
+
+    Methods of this form are currently "AUTOLOAD"ed if they do not yet
+    exist, but this feature should not be relied upon - see below.
+
 AUTOLOADED CONVERSION METHODS
     This class provides "AUTOLOAD" and "can" behaviour which automatically
     constructs conversion methods. The following method calls are identical:
@@ -118,11 +127,41 @@ AUTOLOADED CONVERSION METHODS
     The generated method will be stored in the package, so that future calls
     will not have the AUTOLOAD overhead.
 
+    This feature is deprecated and should not be relied upon, due to the
+    delicate nature of "AUTOLOAD".
+
 OTHER METHODS
     As well as the above, it is likely the subclass will provide accessors
     to directly obtain the components of its representation in the specific
     space. For more detail, see the documentation for the specific subclass
     in question.
+
+SUBCLASS METHODS
+    This base class is intended to be subclassed to provide more color
+    spaces.
+
+  $class->register_color_space( $space )
+    A subclass should call this method to register itself as a named color
+    space.
+
+  $class->register_palette( %args )
+    A subclass that provides a fixed set of color values should call this
+    method, to set up automatic conversions that look for the closest match
+    within the set. This conversion process is controlled by the %args:
+
+    enumerate => STRING or CODE
+            A method name or anonymous CODE reference which will be used to
+            generate the list of color values.
+
+    enumerate_once => STRING or CODE
+            As per "enumerate", but will be called only once and the results
+            cached.
+
+    This conversion process only finds the closest match in RGB space, so it
+    may not give exact results.
+
+    In the case of a tie, where two or more colors have the same distance
+    from the target, the first one will be chosen.
 
 AUTHOR
     Paul Evans <leonerd@leonerd.org.uk>

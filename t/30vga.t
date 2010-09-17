@@ -1,8 +1,10 @@
 #!/usr/bin/perl
 
-use Test::More tests => 14;
+use Test::More tests => 16;
 
 use Convert::Color::VGA;
+use Convert::Color::RGB;
+use Convert::Color::RGB8;
 
 my $red = Convert::Color::VGA->new( 'red' );
 
@@ -29,3 +31,10 @@ my $blue = Convert::Color->new( 'vga:blue' );
 is( $blue->red,   0, 'blue red' );
 is( $blue->green, 0, 'blue green' );
 is( $blue->blue,  1, 'blue blue' );
+
+my $darkred = Convert::Color::RGB->new( 0.8, 0, 0 );
+
+my $best_red = $darkred->as_vga;
+
+is( $best_red->name,  "red", 'best red name' );
+is( $best_red->index, 4,     'best red index' );

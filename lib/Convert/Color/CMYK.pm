@@ -9,13 +9,13 @@ use strict;
 use warnings;
 use base qw( Convert::Color );
 
-use constant COLOR_SPACE => 'cmyk';
+__PACKAGE__->register_color_space( 'cmyk' );
 
 use List::Util qw( min );
 
 use Carp;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 

@@ -1,5 +1,12 @@
 Revision history for Convert-Color
 
+0.06    CHANGES:
+         * Introduced ->register_color_space and ->register_palette
+           declarations
+         * Announce AUTOLOAD behaviour as deprecated
+         * Provide automatic "best match" palette searches on registered
+           palette spaces
+
 0.05    CHANGES:
          * Documentation fixes
          * Various small updates to keep CPANTS happy

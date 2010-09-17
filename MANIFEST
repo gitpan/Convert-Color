@@ -29,8 +29,8 @@ t/13convert-hsl.t
 t/14convert-cmy.t
 t/15convert-cmyk.t
 t/20magic-const.t
+t/21rgb-blend.t
+t/22rgb-dst.t
 t/30vga.t
 t/31x11.t
-t/40rgb-blend.t
-t/50rgb-dst.t
 t/99pod.t

@@ -1,7 +1,7 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009,2010 -- leonerd@leonerd.org.uk
 
 package Convert::Color::VGA;
 
@@ -9,11 +9,11 @@ use strict;
 use warnings;
 use base qw( Convert::Color::RGB );
 
-use constant COLOR_SPACE => 'vga';
+__PACKAGE__->register_color_space( 'vga' );
 
 use Carp;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 
@@ -68,6 +68,13 @@ my %vga_colors = (
 # Also indexes
 my @vga_colors = qw(
    black blue green cyan red magenta yellow white
+);
+
+__PACKAGE__->register_palette(
+   enumerate_once => sub {
+      my $class = shift;
+      map { $class->new( $_ ) } @vga_colors;
+   },
 );
 
 =head1 CONSTRUCTOR

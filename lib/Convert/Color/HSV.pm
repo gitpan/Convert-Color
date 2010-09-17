@@ -9,11 +9,11 @@ use strict;
 use warnings;
 use base qw( Convert::Color::HueBased );
 
-use constant COLOR_SPACE => 'hsv';
+__PACKAGE__->register_color_space( 'hsv' );
 
 use Carp;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 

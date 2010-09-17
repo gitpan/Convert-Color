@@ -1,11 +1,12 @@
 #!/usr/bin/perl
 
 use Convert::Color::X11;
+use Convert::Color::RGB8;
 
 require Test::More;
 
 if( eval { Convert::Color::X11->colors; 1 } ) {
-   import Test::More tests => 10;
+   import Test::More tests => 11;
 }
 else {
    import Test::More skip_all => "Cannot load X11 rgb.txt database";
@@ -30,3 +31,7 @@ is( $green->green, 255, 'green green' );
 is( $green->blue,    0, 'green blue' );
 
 is( $green->name, "green", 'green name' );
+
+my $white = Convert::Color::RGB8->new( 255, 255, 255 )->as_x11;
+
+is( $white->name, "white", 'white from RGB8 name' );

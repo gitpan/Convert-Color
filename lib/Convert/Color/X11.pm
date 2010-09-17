@@ -1,7 +1,7 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009,2010 -- leonerd@leonerd.org.uk
 
 package Convert::Color::X11;
 
@@ -9,11 +9,11 @@ use strict;
 use warnings;
 use base qw( Convert::Color::RGB8 );
 
-use constant COLOR_SPACE => 'x11';
+__PACKAGE__->register_color_space( 'x11' );
 
 use Carp;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 # Different systems put it in different places. We'll try all of them taking
 # the first we find
@@ -49,7 +49,34 @@ provided by X11's F<rgb.txt> file.
 
 =cut
 
+my @x11_color_names; # To preserve order
 my $x11_colors;
+
+sub _load_x11_colors
+{
+   my $rgbtxt;
+
+   foreach ( @RGB_TXT ) {
+      -f $_ or next;
+
+      open( $rgbtxt, "<", $_ ) or die "Cannot read $_ - $!\n";
+      last;
+   }
+
+   $rgbtxt or die "No rgb.txt file was found\n";
+
+   local $_;
+
+   while( <$rgbtxt> ) {
+      s/^\s+//; # trim leading WS
+      next if m/^!/; # comment
+
+      my ( $r, $g, $b, $name ) = m/^(\d+)\s+(\d+)\s+(\d+)\s+(.*)$/ or next;
+
+      $x11_colors->{$name} = [ $r, $g, $b ];
+      push @x11_color_names, $name;
+   }
+}
 
 =head1 CLASS METHODS
 
@@ -71,10 +98,17 @@ sub colors
 {
    my $class = shift;
 
-   $x11_colors ||= _load_x11_colors();
+   $x11_colors or _load_x11_colors;
 
-   return keys %$x11_colors;
+   return @x11_color_names;
 }
+
+__PACKAGE__->register_palette(
+   enumerate => sub {
+      my $class = shift;
+      map { $class->new( $_ ) } $class->colors;
+   },
+);
 
 =head1 CONSTRUCTOR
 
@@ -93,7 +127,7 @@ sub new
    if( @_ == 1 ) {
       my $name = $_[0];
 
-      $x11_colors ||= _load_x11_colors();
+      $x11_colors or _load_x11_colors;
 
       my $color = $x11_colors->{$name} or
          croak "No such X11 color named '$name'";
@@ -123,35 +157,6 @@ sub name
 {
    my $self = shift;
    return $self->[3];
-}
-
-sub _load_x11_colors
-{
-   my %colors;
-
-   my $rgbtxt;
-
-   foreach ( @RGB_TXT ) {
-      -f $_ or next;
-
-      open( $rgbtxt, "<", $_ ) or die "Cannot read $_ - $!\n";
-      last;
-   }
-
-   $rgbtxt or die "No rgb.txt file was found\n";
-
-   local $_;
-
-   while( <$rgbtxt> ) {
-      s/^\s+//; # trim leading WS
-      next if m/^!/; # comment
-
-      my ( $r, $g, $b, $name ) = m/^(\d+)\s+(\d+)\s+(\d+)\s+(.*)$/ or next;
-
-      $colors{$name} = [ $r, $g, $b ];
-   }
-
-   return \%colors;
 }
 
 # Keep perl happy; keep Britain tidy

@@ -1,7 +1,7 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009,2010 -- leonerd@leonerd.org.uk
 
 package Convert::Color;
 
@@ -10,11 +10,13 @@ use warnings;
 
 use Carp;
 
-use Module::Pluggable require => 1,
+use List::UtilsBy qw( min_by );
+
+use Module::Pluggable require => 0,
                       search_path => [ 'Convert::Color' ];
 my @plugins = Convert::Color->plugins;
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 
 =head1 NAME
 
@@ -100,20 +102,47 @@ L<Convert::Color::X11> - named lookup of colors from X11's F<rgb.txt>
 
 =cut
 
+my $_space2class_cache_initialised;
 my %_space2class_cache; # {$space} = $class
+my %_class2space_cache; # {$class} = $space
+
+# doc'ed later for readability...
+sub register_color_space
+{
+   my $class = shift;
+   my ( $space ) = @_;
+
+   exists $_space2class_cache{$space} and croak "Color space $space is already defined";
+   exists $_class2space_cache{$class} and croak "Class $class already declared a color space";
+
+   $_space2class_cache{$space} = $class;
+   $_class2space_cache{$class} = $space;
+
+   no strict 'refs';
+   *{"as_$space"} = sub { shift->convert_to( $space ) };
+}
+
 sub _space2class
 {
    my ( $space ) = @_;
 
-   return $_space2class_cache{$space} if exists $_space2class_cache{$space};
+   unless( $_space2class_cache_initialised ) {
+      $_space2class_cache_initialised++;
+      # Initialise the space name to class cache
+      foreach my $class ( @plugins ) {
+         ( my $file = "$class.pm" ) =~ s{::}{/}g;
+         require $file or next;
 
-   foreach my $class ( @plugins ) {
-      $class->can( 'COLOR_SPACE' ) or next;
+         $class->can( 'COLOR_SPACE' ) or next;
+         my $thisspace = $class->COLOR_SPACE or next;
 
-      return $_space2class_cache{$space} = $class if $class->COLOR_SPACE eq $space;
+         #warn "Discovered $class by deprecated COLOR_SPACE method\n";
+
+         $class->register_color_space( $thisspace );
+      }
    }
 
-   return undef;
+   return $_space2class_cache{$space};
 }
 
 =head2 $color = Convert::Color->new( STRING )
@@ -219,6 +248,15 @@ These functions may be called in the following ways:
 Attempt to convert the color into its representation in the given space. See
 above for the various ways this may be achieved.
 
+If the relevant subclass has already been loaded (either explicitly, or
+implicitly by either the C<new> or C<convert_to> methods), then a specific
+conversion method will be installed in the class.
+
+ $other = $color->as_$space
+
+Methods of this form are currently C<AUTOLOAD>ed if they do not yet exist, but
+this feature should not be relied upon - see below.
+
 =cut
 
 sub convert_to
@@ -228,7 +266,7 @@ sub convert_to
 
    my $to_class = _space2class( $to_space ) or croak "Unrecognised color space name '$to_space'";
 
-   my $from_space = ref($self)->COLOR_SPACE;
+   my $from_space = $_class2space_cache{ref $self};
 
    if( $from_space eq $to_space ) {
       # Identity conversion
@@ -271,6 +309,9 @@ constructs conversion methods. The following method calls are identical:
 The generated method will be stored in the package, so that future calls will
 not have the AUTOLOAD overhead.
 
+This feature is deprecated and should not be relied upon, due to the delicate
+nature of C<AUTOLOAD>.
+
 =cut
 
 # Since this is AUTOLOADed, we can dynamically provide new methods for classes
@@ -300,13 +341,18 @@ sub AUTOLOAD
 
    return if $method eq "DESTROY";
 
-   if( my $code = $_[0]->can( $method ) ) {
+   if( ref $_[0] and my $code = $_[0]->can( $method ) ) {
+      # It's possible that the lazy loading by ->can has just created this method
+      # warn "Relying on AUTOLOAD to provide $method\n";
       no strict 'refs';
-      *{$method} = $code;
+      unless( defined &{$method} ) {
+         *{$method} = $code;
+      }
       goto &$code;
    }
 
-   croak "$_[0] cannot do $method";
+   my $class = ref $_[0] || $_[0];
+   croak qq(Cannot locate object method "$method" via package "$class");
 }
 
 =head1 OTHER METHODS
@@ -316,6 +362,82 @@ directly obtain the components of its representation in the specific space.
 For more detail, see the documentation for the specific subclass in question.
 
 =cut
+
+=head1 SUBCLASS METHODS
+
+This base class is intended to be subclassed to provide more color spaces.
+
+=cut
+
+=head2 $class->register_color_space( $space )
+
+A subclass should call this method to register itself as a named color space.
+
+=cut
+
+=head2 $class->register_palette( %args )
+
+A subclass that provides a fixed set of color values should call this method,
+to set up automatic conversions that look for the closest match within the
+set. This conversion process is controlled by the C<%args>:
+
+=over 8
+
+=item enumerate => STRING or CODE
+
+A method name or anonymous CODE reference which will be used to generate the
+list of color values.
+
+=item enumerate_once => STRING or CODE
+
+As per C<enumerate>, but will be called only once and the results cached.
+
+=back
+
+This conversion process only finds the closest match in RGB space, so it may
+not give exact results.
+
+In the case of a tie, where two or more colors have the same distance from the
+target, the first one will be chosen.
+
+=cut
+
+sub register_palette
+{
+   my $pkg = shift;
+   my %args = @_;
+
+   my $enumerate;
+
+   if( $args{enumerate} ) {
+      $enumerate = $args{enumerate};
+   }
+   elsif( my $enumerate_once = $args{enumerate_once} ) {
+      my @colors;
+      $enumerate = sub {
+         my $class = shift;
+         @colors = $class->$enumerate_once unless @colors;
+         return @colors;
+      }
+   }
+   else {
+      croak "Require 'enumerate' or 'enumerate_once'";
+   }
+
+   no strict 'refs';
+
+   *{"${pkg}::new_from_rgb"} = sub {
+      my $class = shift;
+      my ( $rgb ) = @_;
+
+      return min_by { $rgb->dst_rgb_cheap( $_ ) } $class->$enumerate;
+   };
+
+   *{"${pkg}::new_rgb"} = sub {
+      my $class = shift;
+      return $class->new_from_rgb( Convert::Color::RGB->new( @_ ) );
+   };
+}
 
 # Keep perl happy; keep Britain tidy
 1;
