@@ -16,7 +16,7 @@ use Module::Pluggable require => 0,
                       search_path => [ 'Convert::Color' ];
 my @plugins = Convert::Color->plugins;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 NAME
 
@@ -136,7 +136,7 @@ sub _space2class
          $class->can( 'COLOR_SPACE' ) or next;
          my $thisspace = $class->COLOR_SPACE or next;
 
-         #warn "Discovered $class by deprecated COLOR_SPACE method\n";
+         warnings::warn( deprecated => "Discovered $class by deprecated COLOR_SPACE method" );
 
          $class->register_color_space( $thisspace );
       }
@@ -343,7 +343,7 @@ sub AUTOLOAD
 
    if( ref $_[0] and my $code = $_[0]->can( $method ) ) {
       # It's possible that the lazy loading by ->can has just created this method
-      # warn "Relying on AUTOLOAD to provide $method\n";
+      warnings::warn( deprecated => "Relying on AUTOLOAD to provide $method" );
       no strict 'refs';
       unless( defined &{$method} ) {
          *{$method} = $code;

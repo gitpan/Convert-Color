@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'rgb' );
 
 use Carp;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 =head1 NAME
 

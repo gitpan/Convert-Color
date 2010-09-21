@@ -1,5 +1,12 @@
 Revision history for Convert-Color
 
+0.07    CHANGES:
+         * Add warnings in 'deprecated' category for AUTOLOAD and COLOR_SPACE
+           behaviours
+
+        BUGFIXES:
+         * Declare dependency on List::UtilsBy
+
 0.06    CHANGES:
          * Introduced ->register_color_space and ->register_palette
            declarations

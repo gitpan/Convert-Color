@@ -5,6 +5,7 @@ WriteMakefile
           'NAME' => 'Convert::Color',
           'VERSION_FROM' => 'lib/Convert/Color.pm',
           'PREREQ_PM' => {
+                           'List::UtilsBy' => 0,
                            'Module::Pluggable' => 0,
                            'Test::More' => 0
                          },
