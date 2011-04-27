@@ -44,5 +44,4 @@ sub _hue_min_max
    return ( $hue, $min, $max );
 }
 
-# Keep perl happy; keep Britain tidy
-1;
+0x55AA;

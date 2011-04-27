@@ -1,7 +1,7 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009,2010 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009-2011 -- leonerd@leonerd.org.uk
 
 package Convert::Color::X11;
 
@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'x11' );
 
 use Carp;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 # Different systems put it in different places. We'll try all of them taking
 # the first we find
@@ -84,8 +84,8 @@ sub _load_x11_colors
 
 =head2 @colors = Convert::Color::X11->colors
 
-Returns a list of the defined color names. This is a list of hash keys, so is
-returned in no particular order.
+Returns a list of the defined color names, in the order they were found in the
+F<rgb.txt> file.
 
 =head2 $num_colors = Convert::Color::X11->colors
 
@@ -159,11 +159,6 @@ sub name
    return $self->[3];
 }
 
-# Keep perl happy; keep Britain tidy
-1;
-
-__END__
-
 =head1 SEE ALSO
 
 =over 4
@@ -177,3 +172,7 @@ L<Convert::Color> - color space conversions
 =head1 AUTHOR
 
 Paul Evans <leonerd@leonerd.org.uk>
+
+=cut
+
+0x55AA;

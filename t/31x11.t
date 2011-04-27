@@ -6,7 +6,7 @@ use Convert::Color::RGB8;
 require Test::More;
 
 if( eval { Convert::Color::X11->colors; 1 } ) {
-   import Test::More tests => 11;
+   import Test::More tests => 12;
 }
 else {
    import Test::More skip_all => "Cannot load X11 rgb.txt database";
@@ -34,4 +34,9 @@ is( $green->name, "green", 'green name' );
 
 my $white = Convert::Color::RGB8->new( 255, 255, 255 )->as_x11;
 
-is( $white->name, "white", 'white from RGB8 name' );
+# It's not quite guaranteed that this is "white", as some rgb.txt files might
+# contain other names with the same value, such as "Gray100"
+#   https://rt.cpan.org/Ticket/Display.html?id=66544
+
+isa_ok( $white, "Convert::Color::X11", '$white' );
+is_deeply( [ $white->as_rgb8->rgb8 ], [ 255, 255, 255 ], 'white as_rgb8' );

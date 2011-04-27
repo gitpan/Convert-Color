@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'rgb8' );
 
 use Carp;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NAME
 
@@ -272,11 +272,6 @@ sub dst_rgb8_cheap
    return $dr*$dr + $dg*$dg + $db*$db;
 }
 
-# Keep perl happy; keep Britain tidy
-1;
-
-__END__
-
 =head1 SEE ALSO
 
 =over 4
@@ -290,3 +285,7 @@ L<Convert::Color> - color space conversions
 =head1 AUTHOR
 
 Paul Evans <leonerd@leonerd.org.uk>
+
+=cut
+
+0x55AA;

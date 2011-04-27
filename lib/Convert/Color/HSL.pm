@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'hsl' );
 
 use Carp;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NAME
 
@@ -180,11 +180,6 @@ sub new_rgb
    return $class->new( $hue, $s, $l );
 }
 
-# Keep perl happy; keep Britain tidy
-1;
-
-__END__
-
 =head1 SEE ALSO
 
 =over 4
@@ -202,3 +197,7 @@ L<Convert::Color::RGB> - a color value represented as red/green/blue
 =head1 AUTHOR
 
 Paul Evans <leonerd@leonerd.org.uk>
+
+=cut
+
+0x55AA;

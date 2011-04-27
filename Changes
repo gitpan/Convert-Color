@@ -1,5 +1,12 @@
 Revision history for Convert-Color
 
+0.08    CHANGES:
+         * Fix VGA colours so the indices agree with VT100/ANSI colour
+           numbering
+         * Don't rely on rgb8:255,255,255 as X11 being called 'white' during
+           testing
+         * Added an example script for generating gradients
+
 0.07    CHANGES:
          * Add warnings in 'deprecated' category for AUTOLOAD and COLOR_SPACE
            behaviours

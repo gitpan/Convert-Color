@@ -1,7 +1,7 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009-2011 -- leonerd@leonerd.org.uk
 
 package Convert::Color::RGB;
 
@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'rgb' );
 
 use Carp;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NAME
 
@@ -208,10 +208,19 @@ sub dst_rgb_cheap
    return $dr*$dr + $dg*$dg + $db*$db;
 }
 
-# Keep perl happy; keep Britain tidy
-1;
+=head1 EXAMPLES
 
-__END__
+=head2 Generating Gradients
+
+The C<alpha_blend> method can be used to generate a smooth gradient between
+two colours.
+
+ use Convert::Color;
+ 
+ my $blue = Convert::Color->new("vga:blue");
+ my $cyan = Convert::Color->new("vga:cyan");
+ 
+ say $blue->alpha_blend( $cyan, $_/10 )->as_rgb8->hex for 0 .. 10
 
 =head1 SEE ALSO
 
@@ -234,3 +243,7 @@ L<Convert::Color::HSL> - a color value represented as hue/saturation/lightness
 =head1 AUTHOR
 
 Paul Evans <leonerd@leonerd.org.uk>
+
+=cut
+
+0x55AA;

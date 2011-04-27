@@ -1,5 +1,6 @@
 Build.PL
 Changes
+examples/gradient.pl
 examples/html-sample.pl
 lib/Convert/Color.pm
 lib/Convert/Color/CMY.pm
@@ -34,3 +35,4 @@ t/22rgb-dst.t
 t/30vga.t
 t/31x11.t
 t/99pod.t
+META.json

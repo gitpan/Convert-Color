@@ -13,7 +13,7 @@ is( $red->green, 0, 'red green' );
 is( $red->blue,  0, 'red blue' );
 
 is( $red->name,  "red", 'red name' );
-is( $red->index, 4,     'red index' );
+is( $red->index, 1,     'red index' );
 
 is_deeply( [ $red->as_rgb8->rgb8 ], [ 255, 0, 0 ], 'red as_rgb8' );
 
@@ -37,4 +37,4 @@ my $darkred = Convert::Color::RGB->new( 0.8, 0, 0 );
 my $best_red = $darkred->as_vga;
 
 is( $best_red->name,  "red", 'best red name' );
-is( $best_red->index, 4,     'best red index' );
+is( $best_red->index, 1,     'best red index' );

@@ -15,7 +15,7 @@ use List::Util qw( min );
 
 use Carp;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NAME
 
@@ -201,11 +201,6 @@ sub new_from_cmy
    return $class->new_cmy( $cmy->cyan, $cmy->magenta, $cmy->yellow );
 }
 
-# Keep perl happy; keep Britain tidy
-1;
-
-__END__
-
 =head1 SEE ALSO
 
 =over 4
@@ -223,3 +218,7 @@ L<Convert::Color::CMY> - a color value represented as cyan/magenta/yellow
 =head1 AUTHOR
 
 Paul Evans <leonerd@leonerd.org.uk>
+
+=cut
+
+0x55AA;

@@ -1,7 +1,7 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009,2010 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009-2011 -- leonerd@leonerd.org.uk
 
 package Convert::Color::VGA;
 
@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'vga' );
 
 use Carp;
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 
 =head1 NAME
 
@@ -42,12 +42,12 @@ This subclass of L<Convert::Color::RGB> provides predefined colors for the 8
 basic VGA colors. Their names are
 
  black
- blue
- green
- cyan
  red
- magenta
+ green
  yellow
+ blue
+ magenta
+ cyan
  white
 
 They may be looked up either by name, or by numerical index within this list.
@@ -56,18 +56,18 @@ They may be looked up either by name, or by numerical index within this list.
 
 my %vga_colors = (
    black   => [ 0, 0, 0 ],
-   blue    => [ 0, 0, 1 ],
-   green   => [ 0, 1, 0 ],
-   cyan    => [ 0, 1, 1 ],
    red     => [ 1, 0, 0 ],
-   magenta => [ 1, 0, 1 ],
+   green   => [ 0, 1, 0 ],
    yellow  => [ 1, 1, 0 ],
+   blue    => [ 0, 0, 1 ],
+   magenta => [ 1, 0, 1 ],
+   cyan    => [ 0, 1, 1 ],
    white   => [ 1, 1, 1 ],
 );
 
 # Also indexes
 my @vga_colors = qw(
-   black blue green cyan red magenta yellow white
+   black red green yellow blue magenta cyan white
 );
 
 __PACKAGE__->register_palette(
@@ -150,11 +150,6 @@ sub name
    return $vga_colors[$self->index];
 }
 
-# Keep perl happy; keep Britain tidy
-1;
-
-__END__
-
 =head1 SEE ALSO
 
 =over 4
@@ -168,3 +163,7 @@ L<Convert::Color> - color space conversions
 =head1 AUTHOR
 
 Paul Evans <leonerd@leonerd.org.uk>
+
+=cut
+
+0x55AA;
