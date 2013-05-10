@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 34;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::RGB;
 use Convert::Color::RGB8;
@@ -75,3 +78,5 @@ is( $black16->dst_rgb16_cheap( $green16 ), 0xffff*0xffff, 'black16->dst_rgb16_ch
 is( $black16->dst_rgb16_cheap( $blue16  ), 0xffff*0xffff, 'black16->dst_rgb16_cheap blue16' );
 
 is( $black16->dst_rgb16_cheap( $white16 ), 3*0xffff*0xffff, 'black16->dst_rgb16_cheap white16' );
+
+done_testing;

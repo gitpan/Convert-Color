@@ -1,19 +1,19 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009-2013 -- leonerd@leonerd.org.uk
 
 package Convert::Color::HSV;
 
 use strict;
 use warnings;
-use base qw( Convert::Color::HueBased );
+use base qw( Convert::Color::HueChromaBased );
 
 __PACKAGE__->register_color_space( 'hsv' );
 
 use Carp;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head1 NAME
 
@@ -41,6 +41,20 @@ Via L<Convert::Color>:
 Objects in this class represent a color in HSV space, as a set of three
 floating-point values. Hue is stored as a value in degrees, in the range
 0 to 360 (exclusive). Saturation and value are in the range 0 to 1.
+
+This color space may be considered as a cylinder, of height and radius 1. Hue
+represents the position of the color as the angle around the axis, the
+saturation the distance from the axis, and the value the height above the
+base. In this shape, the entire base of the cylinder is pure black, the axis
+through the centre represents the range of greys, and the circumference of the
+top of the cylinder contains the pure-saturated color wheel, with a pure
+white point at its centre.
+
+Because the entire bottom surface of this cylinder contains black, a
+closely-related color space can be created by reshaping the cylinder into a
+cone by contracting the base of the cylinder into a point. The radius from the
+axis is called the chroma (though this is a different definition of "chroma"
+than that used by CIE).
 
 =cut
 
@@ -116,6 +130,21 @@ sub hue        { shift->[0] }
 sub saturation { shift->[1] }
 sub value      { shift->[2] }
 
+=head2 $c = $color->chroma
+
+Returns the derived property of "chroma", which maps the color space onto a
+cone instead of a cylinder. This more closely measures the intuitive concept
+of how "colorful" the color is than the saturation value and is useful for
+distance calculations.
+
+=cut
+
+sub chroma
+{
+   my $self = shift;
+   return $self->saturation * $self->value;
+}
+
 =head2 ( $hue, $saturation, $value ) = $color->hsv
 
 Returns the individual hue, saturation and value components of the color
@@ -185,6 +214,44 @@ sub new_rgb
    );
 }
 
+=head2 $measure = $color->dst_hsv( $other )
+
+Returns a measure of the distance between the two colors. This is the
+Euclidean distance between the two colors as points in the chroma-adjusted
+cone space.
+
+=cut
+
+sub dst_hsv
+{
+   my $self = shift;
+   my ( $other ) = @_;
+
+   # ... / sqrt(4)
+   return sqrt( $self->dst_hsv_cheap( $other ) ) / 2;
+}
+
+=head2 $measure = $color->dst_hsv_cheap( $other )
+
+Returns a measure of the distance between the two colors. This is used in the
+calculation of C<dst_hsv> but since it omits the final square-root and scaling
+it is cheaper to calculate, for use in cases where only the relative values
+matter, such as when picking the "best match" out of a set of colors. It
+ranges between 0 for identical colors and 4 for the distance between
+complementary pure-saturated colors.
+
+=cut
+
+sub dst_hsv_cheap
+{
+   my $self = shift;
+   my ( $other ) = @_;
+
+   my $dv = $self->value - $other->value;
+
+   return $self->_huechroma_dst_squ( $other ) + $dv*$dv;
+}
+
 =head1 SEE ALSO
 
 =over 4
@@ -196,6 +263,10 @@ L<Convert::Color> - color space conversions
 =item *
 
 L<Convert::Color::RGB> - a color value represented as red/green/blue
+
+=item *
+
+L<http://en.wikipedia.org/wiki/HSL_and_HSV> - HSL and HSV on Wikipedia
 
 =back
 

@@ -1,7 +1,7 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009,2010 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009-2013 -- leonerd@leonerd.org.uk
 
 package Convert::Color;
 
@@ -16,7 +16,7 @@ use Module::Pluggable require => 0,
                       search_path => [ 'Convert::Color' ];
 my @plugins = Convert::Color->plugins;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head1 NAME
 
@@ -394,8 +394,13 @@ As per C<enumerate>, but will be called only once and the results cached.
 
 =back
 
-This conversion process only finds the closest match in RGB space, so it may
-not give exact results.
+This method creates a new class method on the calling package, called
+C<closest_to>.
+
+=head3 $color = $pkg->closest_to( $orig, $space )
+
+Returns the color in the space closest to the given value. The distance is
+measured in the named space; defaulting to C<rgb> if this is not provided.
 
 In the case of a tie, where two or more colors have the same distance from the
 target, the first one will be chosen.
@@ -426,16 +431,29 @@ sub register_palette
 
    no strict 'refs';
 
-   *{"${pkg}::new_from_rgb"} = sub {
+   *{"${pkg}::closest_to"} = sub {
       my $class = shift;
-      my ( $rgb ) = @_;
+      my ( $orig, $space ) = @_;
 
-      return min_by { $rgb->dst_rgb_cheap( $_ ) } $class->$enumerate;
+      $space ||= "rgb";
+
+      $orig = $orig->convert_to( $space );
+      my $dst = "dst_${space}_cheap";
+
+      return min_by { $orig->$dst( $_->convert_to( $space ) ) } $class->$enumerate;
    };
+
+   foreach my $space (qw( rgb hsv hsl )) {
+      *{"${pkg}::new_from_${space}"} = sub {
+         my $class = shift;
+         my ( $rgb ) = @_;
+         return $pkg->closest_to( $rgb, $space );
+      };
+   }
 
    *{"${pkg}::new_rgb"} = sub {
       my $class = shift;
-      return $class->new_from_rgb( Convert::Color::RGB->new( @_ ) );
+      return $class->closest_to( Convert::Color::RGB->new( @_ ), "rgb" );
    };
 }
 

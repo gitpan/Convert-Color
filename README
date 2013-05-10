@@ -1,5 +1,5 @@
 NAME
-    "Convert::Color" - color space conversions and named lookups
+    `Convert::Color' - color space conversions and named lookups
 
 SYNOPSIS
      use Convert::Color;
@@ -74,27 +74,27 @@ METHODS
     Returns the individual red, green and blue color components of the color
     value. For RGB values, this is done directly. For values in other
     spaces, this is done by first converting them to an RGB value using
-    their "to_rgb()" method.
+    their `to_rgb()' method.
 
 COLOR SPACE CONVERSIONS
-    Cross-conversion between color spaces is provided by the "convert_to()"
+    Cross-conversion between color spaces is provided by the `convert_to()'
     method, assisted by helper methods in the two color space classes
     involved.
 
-    When converting $color from color space SRC to color space DEST, the
+    When converting `$color' from color space SRC to color space DEST, the
     following operations are attemped, in this order. SRC and DEST refer to
-    the names of the color spaces, e.g. "rgb".
+    the names of the color spaces, e.g. `rgb'.
 
-    1.  If SRC and DEST are equal, return $color as it stands.
+    1.  If SRC and DEST are equal, return `$color' as it stands.
 
-    2.  If the SRC space's class provides a "convert_to_DEST" method, use
+    2.  If the SRC space's class provides a `convert_to_DEST' method, use
         it.
 
-    3.  If the DEST space's class provides a "new_from_SRC" constructor,
-        call it and pass $color.
+    3.  If the DEST space's class provides a `new_from_SRC' constructor,
+        call it and pass `$color'.
 
-    4.  If the DEST space's class provides a "new_rgb" constructor, convert
-        $color to red/green/blue components then call it.
+    4.  If the DEST space's class provides a `new_rgb' constructor, convert
+        `$color' to red/green/blue components then call it.
 
     5.  If none of these operations worked, then throw an exception.
 
@@ -109,16 +109,16 @@ COLOR SPACE CONVERSIONS
     See above for the various ways this may be achieved.
 
     If the relevant subclass has already been loaded (either explicitly, or
-    implicitly by either the "new" or "convert_to" methods), then a specific
+    implicitly by either the `new' or `convert_to' methods), then a specific
     conversion method will be installed in the class.
 
      $other = $color->as_$space
 
-    Methods of this form are currently "AUTOLOAD"ed if they do not yet
+    Methods of this form are currently `AUTOLOAD'ed if they do not yet
     exist, but this feature should not be relied upon - see below.
 
 AUTOLOADED CONVERSION METHODS
-    This class provides "AUTOLOAD" and "can" behaviour which automatically
+    This class provides `AUTOLOAD' and `can' behaviour which automatically
     constructs conversion methods. The following method calls are identical:
 
      $color->convert_to('rgb')
@@ -128,7 +128,7 @@ AUTOLOADED CONVERSION METHODS
     will not have the AUTOLOAD overhead.
 
     This feature is deprecated and should not be relied upon, due to the
-    delicate nature of "AUTOLOAD".
+    delicate nature of `AUTOLOAD'.
 
 OTHER METHODS
     As well as the above, it is likely the subclass will provide accessors
@@ -147,18 +147,23 @@ SUBCLASS METHODS
   $class->register_palette( %args )
     A subclass that provides a fixed set of color values should call this
     method, to set up automatic conversions that look for the closest match
-    within the set. This conversion process is controlled by the %args:
+    within the set. This conversion process is controlled by the `%args':
 
     enumerate => STRING or CODE
             A method name or anonymous CODE reference which will be used to
             generate the list of color values.
 
     enumerate_once => STRING or CODE
-            As per "enumerate", but will be called only once and the results
+            As per `enumerate', but will be called only once and the results
             cached.
 
-    This conversion process only finds the closest match in RGB space, so it
-    may not give exact results.
+    This method creates a new class method on the calling package, called
+    `closest_to'.
+
+    $color = $pkg->closest_to( $orig, $space )
+    Returns the color in the space closest to the given value. The distance
+    is measured in the named space; defaulting to `rgb' if this is not
+    provided.
 
     In the case of a tie, where two or more colors have the same distance
     from the target, the first one will be chosen.

@@ -4,7 +4,7 @@
       "Paul Evans <leonerd@leonerd.org.uk>"
    ],
    "dynamic_config" : 1,
-   "generated_by" : "Module::Build version 0.38, CPAN::Meta::Converter version 2.110930",
+   "generated_by" : "Module::Build version 0.4001, CPAN::Meta::Converter version 2.120921",
    "license" : [
       "perl_5"
    ],
@@ -16,61 +16,56 @@
    "prereqs" : {
       "build" : {
          "requires" : {
-            "Test::More" : 0
-         }
-      },
-      "configure" : {
-         "requires" : {
-            "Module::Build" : "0.38"
+            "Test::More" : "0.88"
          }
       },
       "runtime" : {
          "requires" : {
-            "List::UtilsBy" : 0,
-            "Module::Pluggable" : 0
+            "List::UtilsBy" : "0",
+            "Module::Pluggable" : "0"
          }
       }
    },
    "provides" : {
       "Convert::Color" : {
          "file" : "lib/Convert/Color.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::CMY" : {
          "file" : "lib/Convert/Color/CMY.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::CMYK" : {
          "file" : "lib/Convert/Color/CMYK.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::HSL" : {
          "file" : "lib/Convert/Color/HSL.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::HSV" : {
          "file" : "lib/Convert/Color/HSV.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::RGB" : {
          "file" : "lib/Convert/Color/RGB.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::RGB16" : {
          "file" : "lib/Convert/Color/RGB16.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::RGB8" : {
          "file" : "lib/Convert/Color/RGB8.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::VGA" : {
          "file" : "lib/Convert/Color/VGA.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       },
       "Convert::Color::X11" : {
          "file" : "lib/Convert/Color/X11.pm",
-         "version" : "0.08"
+         "version" : "0.09"
       }
    },
    "release_status" : "stable",
@@ -79,5 +74,5 @@
          "http://dev.perl.org/licenses/"
       ]
    },
-   "version" : "0.08"
+   "version" : "0.09"
 }

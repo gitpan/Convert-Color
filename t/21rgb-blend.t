@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 23;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::RGB;
 use Convert::Color::RGB8;
@@ -60,3 +63,5 @@ is_deeply( [ $red16->alpha16_blend( $white16, 0x4000 )->rgb16 ], [ 0xffff, 0x400
 is_deeply( [ $red16->alpha16_blend( $white16, 0xbfff )->rgb16 ], [ 0xffff, 0xbfff, 0xbfff ], 'alpha16_blend(0xbfff) white16' );
 
 is_deeply( [ $red16->alpha16_blend( $black16, 0x4000 )->rgb16 ], [ 0xbfff, 0, 0 ], 'alpha16_blend(0x4000) black16' );
+
+done_testing;

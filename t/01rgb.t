@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 52;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::RGB;
 use Convert::Color::RGB8;
@@ -90,3 +93,5 @@ isa_ok( $grey_2, 'Convert::Color::RGB', '->rgb (identity) conversion' );
 is( $grey_2->red,   0.5, 'grey_2 red' );
 is( $grey_2->green, 0.5, 'grey_2 green' );
 is( $grey_2->blue,  0.5, 'grey_2 blue' );
+
+done_testing;

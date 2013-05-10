@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 16;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::VGA;
 use Convert::Color::RGB;
@@ -38,3 +41,5 @@ my $best_red = $darkred->as_vga;
 
 is( $best_red->name,  "red", 'best red name' );
 is( $best_red->index, 1,     'best red index' );
+
+done_testing;

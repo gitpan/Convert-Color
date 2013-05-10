@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 16;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::CMY;
 
@@ -35,3 +38,5 @@ is( $yellow->magenta, 0, 'yellow magenta' );
 is( $yellow->yellow,  1, 'yellow yellow' );
 
 is_deeply( [ $yellow->cmy ], [ 0, 0, 1 ], 'yellow cmy' );
+
+done_testing;

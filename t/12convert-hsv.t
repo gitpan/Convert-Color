@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 15;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::HSV;
 
@@ -38,3 +41,5 @@ my $black_rgb = $black->as_rgb;
 is( $black_rgb->red,   0, 'black red' );
 is( $black_rgb->green, 0, 'black green' );
 is( $black_rgb->blue,  0, 'black blue' );
+
+done_testing;

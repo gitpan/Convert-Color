@@ -1,19 +1,19 @@
 #  You may distribute under the terms of either the GNU General Public License
 #  or the Artistic License (the same terms as Perl itself)
 #
-#  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
+#  (C) Paul Evans, 2009-2013 -- leonerd@leonerd.org.uk
 
 package Convert::Color::HSL;
 
 use strict;
 use warnings;
-use base qw( Convert::Color::HueBased );
+use base qw( Convert::Color::HueChromaBased );
 
 __PACKAGE__->register_color_space( 'hsl' );
 
 use Carp;
 
-our $VERSION = '0.08';
+our $VERSION = '0.09';
 
 =head1 NAME
 
@@ -41,6 +41,23 @@ Via L<Convert::Color>:
 Objects in this class represent a color in HSL space, as a set of three
 floating-point values. Hue is stored as a value in degrees, in the range
 0 to 360 (exclusive). Saturation and lightness are in the range 0 to 1.
+
+This color space may be considered as a cylinder, of height and radius 1. Hue
+represents the position of the color as the angle around the axis, the
+saturation as the distance from the axis, and the lightness the height above
+the base. In this shape, the entire base of the cylinder is pure black, the
+axis through the centre represents the range of greys, and the entire top of
+the cylinder is pure white. The circumference of the circular cross-section
+midway along the axis contains the pure-saturated color wheel.
+
+Because both surfaces of this cylinder contain pure black or white discs, a
+closely-related color space can be created by reshaping the cylinder into a
+bi-cone such that the top and bottom of the cylinder become single points. The
+radius from the axis of this shape is called the chroma (though this is a
+different definition of "chroma" than that used by CIE).
+
+While the components of this space are called Hue-Chroma-Lightness, it should
+not be confused with the similarly-named Hue-Chroma-Luminance (HCL) space.
 
 =cut
 
@@ -116,6 +133,30 @@ sub hue        { shift->[0] }
 sub saturation { shift->[1] }
 sub lightness  { shift->[2] }
 
+=head2 $c = $color->chroma
+
+Returns the derived property of "chroma", which maps the color space onto a
+bicone instead of a cylinder. This more closely measures the intuitive concept
+of how "colorful" the color is than the saturation value and is useful for
+distance calculations.
+
+=cut
+
+sub chroma
+{
+   my $self = shift;
+   my ( undef, $s, $l ) = $self->hsl;
+
+   if( $l > 0.5 ) {
+      # upper bicone
+      return 2 * $s * ( $l - 1 );
+   }
+   else {
+      # lower bicone
+      return 2 * $s * $l;
+   }
+}
+
 =head2 ( $hue, $saturation, $lightness ) = $color->hsl
 
 Returns the individual hue, saturation and lightness components of the color
@@ -180,6 +221,44 @@ sub new_rgb
    return $class->new( $hue, $s, $l );
 }
 
+=head2 $measure = $color->dst_hsl( $other )
+
+Returns a measure of the distance between the two colors. This is the
+Euclidean distance between the two colors as points in the chroma-adjusted
+cone space.
+
+=cut
+
+sub dst_hsl
+{
+   my $self = shift;
+   my ( $other ) = @_;
+
+   # ... / sqrt(4)
+   return sqrt( $self->dst_hsl_cheap( $other ) ) / 2;
+}
+
+=head2 $measure = $color->dst_hsl_cheap( $other )
+
+Returns a measure of the distance between the two colors. This is used in the
+calculation of C<dst_hsl> but since it omits the final square-root and scaling
+it is cheaper to calculate, for use in cases where only the relative values
+matter, such as when picking the "best match" out of a set of colors. It
+ranges between 0 for identical colors and 4 for the distance between
+complementary pure-saturated colors.
+
+=cut
+
+sub dst_hsl_cheap
+{
+   my $self = shift;
+   my ( $other ) = @_;
+
+   my $dl = $self->lightness - $other->lightness;
+
+   return $self->_huechroma_dst_squ( $other ) + $dl*$dl;
+}
+
 =head1 SEE ALSO
 
 =over 4
@@ -191,6 +270,10 @@ L<Convert::Color> - color space conversions
 =item *
 
 L<Convert::Color::RGB> - a color value represented as red/green/blue
+
+=item *
+
+L<http://en.wikipedia.org/wiki/HSL_and_HSV> - HSL and HSV on Wikipedia
 
 =back
 

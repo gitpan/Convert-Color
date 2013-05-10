@@ -4,11 +4,15 @@
 #  (C) Paul Evans, 2009 -- leonerd@leonerd.org.uk
 
 package # hide from CPAN
-   Convert::Color::HueBased;
+   Convert::Color::HueChromaBased;
 
 use strict;
 use warnings;
 use base qw( Convert::Color );
+
+# For converting degrees to radians
+#   atan2(1,0) == PI/2
+use constant PIover180 => atan2(1,0) / 90;
 
 # No space name since we're not a complete space
 
@@ -42,6 +46,21 @@ sub _hue_min_max
    }
 
    return ( $hue, $min, $max );
+}
+
+# Useful for distance calculations - calculates the square of the distance
+# between two points in polar space
+sub _huechroma_dst_squ
+{
+   my ( $col1, $col2 ) = @_;
+
+   my $r1 = $col1->chroma;
+   my $r2 = $col2->chroma;
+
+   my $dhue = $col1->hue - $col2->hue;
+
+   # Square of polar distance
+   return $r1*$r1 + $r2*$r2 - 2*$r1*$r2*cos( $dhue * PIover180 );
 }
 
 0x55AA;

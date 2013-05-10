@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 25;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::CMYK;
 
@@ -50,3 +53,5 @@ is( $black->yellow,  0, 'black yellow' );
 is( $black->key,     1, 'black key' );
 
 is_deeply( [ $black->cmyk ], [ 0, 0, 0, 1 ], 'black cmyk' );
+
+done_testing;

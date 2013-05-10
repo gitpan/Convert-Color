@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 29;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color;
 
@@ -60,3 +63,5 @@ is( $cyan->cyan,    1, 'cyan cyan' );
 is( $cyan->magenta, 0, 'cyan magenta' );
 is( $cyan->yellow,  0, 'cyan yellow' );
 is( $cyan->key,     0, 'cyan key' );
+
+done_testing;

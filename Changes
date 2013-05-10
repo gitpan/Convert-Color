@@ -1,5 +1,11 @@
 Revision history for Convert-Color
 
+0.09    CHANGES:
+         * Add ->chroma method to HSV and HSL spaces
+         * Add distance metrics in HSV and HSL spaces
+         * Allow palette spaces to perform custom closest-match in any color
+           space by using its distance metric
+
 0.08    CHANGES:
          * Fix VGA colours so the indices agree with VT100/ANSI colour
            numbering

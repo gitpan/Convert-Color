@@ -1,14 +1,14 @@
 #!/usr/bin/perl
 
+use strict;
+use warnings;
+
+use Test::More;
+
 use Convert::Color::X11;
 use Convert::Color::RGB8;
 
-require Test::More;
-
-if( eval { Convert::Color::X11->colors; 1 } ) {
-   import Test::More tests => 12;
-}
-else {
+unless( eval { Convert::Color::X11->colors; 1 } ) {
    import Test::More skip_all => "Cannot load X11 rgb.txt database";
 }
 
@@ -40,3 +40,5 @@ my $white = Convert::Color::RGB8->new( 255, 255, 255 )->as_x11;
 
 isa_ok( $white, "Convert::Color::X11", '$white' );
 is_deeply( [ $white->as_rgb8->rgb8 ], [ 255, 255, 255 ], 'white as_rgb8' );
+
+done_testing;

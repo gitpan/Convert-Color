@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 68;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::RGB;
 
@@ -123,3 +126,5 @@ is( $black_cmyk->cyan,    0, 'black CMYK cyan' );
 is( $black_cmyk->magenta, 0, 'black CMYK magenta' );
 is( $black_cmyk->yellow,  0, 'black CMYK yellow' );
 is( $black_cmyk->key,     1, 'black CMYK key' );
+
+done_testing;

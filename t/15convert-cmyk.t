@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 
-use Test::More tests => 21;
+use strict;
+use warnings;
+
+use Test::More;
 
 use Convert::Color::CMYK;
 
@@ -48,3 +51,5 @@ my $black_cmy = $black->as_cmy;
 is( $black_cmy->cyan,    1, 'black cyan' );
 is( $black_cmy->magenta, 1, 'black magenta' );
 is( $black_cmy->yellow,  1, 'black yellow' );
+
+done_testing;
