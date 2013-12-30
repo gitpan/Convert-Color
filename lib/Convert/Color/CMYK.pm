@@ -15,7 +15,7 @@ use List::Util qw( min );
 
 use Carp;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head1 NAME
 

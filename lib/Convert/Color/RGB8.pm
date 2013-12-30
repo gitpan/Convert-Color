@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'rgb8' );
 
 use Carp;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head1 NAME
 
@@ -83,7 +83,7 @@ sub new
    if( @_ == 1 ) {
       local $_ = $_[0];
       if( m/^([[:xdigit:]]{2})([[:xdigit:]]{2})([[:xdigit:]]{2})$/ ) {
-         ( $r, $g, $b ) = ( hex $1, hex $2, hex $3 );
+         ( $r, $g, $b ) = ( hex( $1 ), hex( $2 ), hex( $3 ) );
       }
       elsif( m/^(\d+),(\d+),(\d+)$/ ) {
          ( $r, $g, $b ) = ( $1, $2, $3 );
@@ -160,7 +160,7 @@ places.
 
 =cut
 
-sub hex
+sub hex :method
 {
    my $self = shift;
    sprintf "%02x%02x%02x", $self->rgb8;

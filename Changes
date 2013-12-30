@@ -1,5 +1,10 @@
 Revision history for Convert-Color
 
+0.10    2013/12/30 01:07:36
+        [CHANGES]
+         * Resolve a cornercase ambiguity between CORE::hex() and sub hex
+           which affects unclean code reloading on 5.16 (RT91722)
+
 0.09    CHANGES:
          * Add ->chroma method to HSV and HSL spaces
          * Add distance metrics in HSV and HSL spaces

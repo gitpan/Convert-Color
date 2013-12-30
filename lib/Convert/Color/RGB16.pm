@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'rgb16' );
 
 use Carp;
 
-our $VERSION = '0.09';
+our $VERSION = '0.10';
 
 =head1 NAME
 
@@ -83,7 +83,7 @@ sub new
    if( @_ == 1 ) {
       local $_ = $_[0];
       if( m/^([[:xdigit:]]{4})([[:xdigit:]]{4})([[:xdigit:]]{4})$/ ) {
-         ( $r, $g, $b ) = ( hex $1, hex $2, hex $3 );
+         ( $r, $g, $b ) = ( hex( $1 ), hex( $2 ), hex( $3 ) );
       }
       elsif( m/^(\d+),(\d+),(\d+)$/ ) {
          ( $r, $g, $b ) = ( $1, $2, $3 );
@@ -159,7 +159,7 @@ a convenient C<RRRRGGGGBBBB> hex string.
 
 =cut
 
-sub hex
+sub hex :method
 {
    my $self = shift;
    sprintf "%04x%04x%04x", $self->rgb16;
