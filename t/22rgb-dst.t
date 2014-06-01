@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Number::Delta;
 
 use Convert::Color::RGB;
 use Convert::Color::RGB8;
@@ -17,9 +18,9 @@ my $blue  = Convert::Color::RGB->new( 0, 0, 1 );
 
 is( $black->dst_rgb( $black ), 0, 'black->dst_rgb black' );
 
-is( $black->dst_rgb( $red   ), 1/sqrt(3), 'black->dst_rgb red' );
-is( $black->dst_rgb( $green ), 1/sqrt(3), 'black->dst_rgb green' );
-is( $black->dst_rgb( $blue  ), 1/sqrt(3), 'black->dst_rgb blue' );
+delta_ok( $black->dst_rgb( $red   ), 1/sqrt(3), 'black->dst_rgb red' );
+delta_ok( $black->dst_rgb( $green ), 1/sqrt(3), 'black->dst_rgb green' );
+delta_ok( $black->dst_rgb( $blue  ), 1/sqrt(3), 'black->dst_rgb blue' );
 
 is( $black->dst_rgb( $white ), 1, 'black->dst_rgb white' );
 
@@ -40,9 +41,9 @@ my $blue8  = Convert::Color::RGB8->new(   0,   0, 255 );
 is( $black8->dst_rgb8( $black8 ), 0, 'black8->dst_rgb8 black8' );
 is( $black8->dst_rgb8( $black  ), 0, 'black8->dst_rgb8 black' );
 
-is( $black8->dst_rgb8( $red8   ), 1/sqrt(3), 'black8->dst_rgb8 red8' );
-is( $black8->dst_rgb8( $green8 ), 1/sqrt(3), 'black8->dst_rgb8 green8' );
-is( $black8->dst_rgb8( $blue8  ), 1/sqrt(3), 'black8->dst_rgb8 blue8' );
+delta_ok( $black8->dst_rgb8( $red8   ), 1/sqrt(3), 'black8->dst_rgb8 red8' );
+delta_ok( $black8->dst_rgb8( $green8 ), 1/sqrt(3), 'black8->dst_rgb8 green8' );
+delta_ok( $black8->dst_rgb8( $blue8  ), 1/sqrt(3), 'black8->dst_rgb8 blue8' );
 
 is( $black8->dst_rgb8( $white8 ), 1, 'black8->dst_rgb8 white8' );
 is( $black8->dst_rgb8( $white  ), 1, 'black8->dst_rgb8 white' );

@@ -13,7 +13,7 @@ __PACKAGE__->register_color_space( 'x11' );
 
 use Carp;
 
-our $VERSION = '0.10';
+our $VERSION = '0.11';
 
 # Different systems put it in different places. We'll try all of them taking
 # the first we find

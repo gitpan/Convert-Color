@@ -1,5 +1,10 @@
 Revision history for Convert-Color
 
+0.11    2014/06/01 21:07:03
+        [BUGFIXES]
+         * Unit-test floating-point numbers with approx delta tests; use
+           Test::Number::Delta (RT94761)
+
 0.10    2013/12/30 01:07:36
         [CHANGES]
          * Resolve a cornercase ambiguity between CORE::hex() and sub hex

@@ -4,6 +4,7 @@ use strict;
 use warnings;
 
 use Test::More;
+use Test::Number::Delta;
 
 use Convert::Color::HSV;
 
@@ -14,21 +15,13 @@ my $green = Convert::Color::HSV->new( 120, 1, 1 );
 my $cyan  = Convert::Color::HSV->new( 180, 1, 1 );
 my $blue  = Convert::Color::HSV->new( 240, 1, 1 );
 
-sub about
-{
-   my ( $got, $expect, $name ) = @_;
-
-   ok( abs( $got - $expect ) < 0.000001, $name ) or
-      diag( "got $got, expected $expect" );
-}
-
 is( $black->dst_hsv( $black ), 0, 'black->dst_hsv black' );
 
-about( $black->dst_hsv( $red   ), 1/sqrt(2), 'black->dst_hsv red' );
-about( $black->dst_hsv( $green ), 1/sqrt(2), 'black->dst_hsv green' );
-about( $black->dst_hsv( $blue  ), 1/sqrt(2), 'black->dst_hsv blue' );
+delta_ok( $black->dst_hsv( $red   ), 1/sqrt(2), 'black->dst_hsv red' );
+delta_ok( $black->dst_hsv( $green ), 1/sqrt(2), 'black->dst_hsv green' );
+delta_ok( $black->dst_hsv( $blue  ), 1/sqrt(2), 'black->dst_hsv blue' );
 
-about( $black->dst_hsv( $white ), 1/2, 'black->dst_hsv white' );
+delta_ok( $black->dst_hsv( $white ), 1/2, 'black->dst_hsv white' );
 
 is( $red->dst_hsv( $cyan ), 1, 'red->dst_hsv cyan' );
 
